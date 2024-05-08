@@ -52,14 +52,14 @@ def SoftBoundaryLoss(outputs, R, c, nu):
 
 
 def weighted_regularisation(weights, model):
-    r = torch.tensor(0.0, requires_grad=True)
+    r = torch.tensor(0.0, requires_grad=True, device='cuda')
     params = [i for i in model.parameters()]
     layer_1_params = params[0]
 
     for node in layer_1_params:
         node_squared = torch.pow(node, 2)
         weighted = torch.mul(node_squared, weights)
-        r += torch.sum(weighted)
+        r  = r + torch.sum(weighted)
 
     return r
 
@@ -203,7 +203,7 @@ class OneClassLayer(BaseNet):
 
             elif self.loss_type=="Weighted":
 
-                self.loss = self.loss_fn(outputs = outputs, R = self.R, c=self.c, n=self.nu, model = self.model, weights = self.reg_weights) 
+                self.loss = self.loss_fn(outputs = outputs, R = self.R, c=self.c, nu=self.nu, model = self.model, weights = self.reg_weights) 
             
             
             #self.c    = torch.mean(torch.tensor(outputs).float(), dim=0)
@@ -238,7 +238,7 @@ class OneClassLayer(BaseNet):
 
                     elif self.loss_type=="Weighted":
 
-                        loss_val = self.loss_fn(outputs = outputs, R = self.R, c=self.c, n=self.nu, model = self.model, weights = self.reg_weights) 
+                        loss_val = self.loss_fn(outputs = outputs, R = self.R, c=self.c, nu=self.nu, model = self.model, weights = self.reg_weights) 
                     
                     self.loss_vals.append(loss_val)
                                         
